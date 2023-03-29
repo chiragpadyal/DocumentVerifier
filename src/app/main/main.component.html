@@ -1,0 +1,19 @@
+<div
+  class="w-full flex flex-col sm:flex-row flex-wrap sm:flex-nowrap py-4 flex-grow"
+>
+  <!-- fixed-width -->
+  <div class="w-fixed w-full flex-shrink flex-grow-0 px-4">
+    <div class="sticky top-0 p-4 w-full h-full">
+      <app-left></app-left>
+    </div>
+  </div>
+  <main role="main" class="w-full flex-grow pt-1 px-3">
+    <app-graph></app-graph>
+  </main>
+  <div class="w-fixed w-full flex-shrink flex-grow-0 px-2">
+    <!-- fixed-width -->
+    <div class="flex sm:flex-col px-2">
+      <app-right></app-right>
+    </div>
+  </div>
+</div>

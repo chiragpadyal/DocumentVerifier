@@ -1,0 +1,33 @@
+<div class="container">
+  <div>
+    <div style="border: black 1px solid">
+      <ngx-graph
+        [view]="[screenWidth / 1.5, screenHeight - 120]"
+        [nodes]="nodes"
+        [links]="edges"
+        [panningEnabled]="true"
+        [draggingEnabled]="false"
+        [enableZoom]="true"
+        [animate]="false"
+        [update$]="update$"
+      >
+        <ng-template #nodeTemplate let-node>
+          <svg:g class="node" (click)="onNodeClick(node)">
+            <svg:rect
+              [attr.width]="node.dimension.width"
+              [attr.height]="node.dimension.height"
+              [attr.fill]="node.data.color"
+            />
+            <svg:text
+              alignment-baseline="central"
+              [attr.x]="10"
+              [attr.y]="node.dimension.height / 2"
+            >
+              {{ node.label }}
+            </svg:text>
+          </svg:g>
+        </ng-template>
+      </ngx-graph>
+    </div>
+  </div>
+</div>
