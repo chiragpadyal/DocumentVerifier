@@ -1,59 +1,60 @@
 <aside
-  class="flex w-full flex-col space-y-2 bg-white"
-  style="height: 90.5vh"
+  #container
+  class="flex w-full flex-col space-y-2 bg-white pr-4"
+  [ngStyle]="{
+    height:
+      properties.properties.length * 80 > window.innerHeight
+        ? '90.5vh'
+        : 'auto',
+    'overflow-y':
+      properties.properties.length * 80 > window.innerHeight ? 'scroll' : 'auto'
+  }"
   x-show="asideOpen"
 >
   <label class="block text-gray-700 text-sm font-bold mb-2">
     Properties:
   </label>
-  <div>
+
+  <div *ngFor="let property of properties.properties">
     <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
-      Name:
+      {{ property.name }}{{ property.isOptional ? "" : "*" }}
     </label>
     <input
+      *ngIf="property.type === 'string'"
       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-      id="password"
       type="text"
+      [(ngModel)]="property.value"
     />
-  </div>
-  <div>
-    <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
-      Attribute Type:
-    </label>
     <input
+      *ngIf="property.type === 'number'"
       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-      id="password"
-      type="text"
+      type="number"
+      pattern="[0-9]*"
+      inputmode="numeric"
+      [(ngModel)]="property.value"
     />
-  </div>
-  <div>
-    <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
-      Cross Check Key:
-    </label>
+
     <input
+      *ngIf="property.type === 'password'"
       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-      id="password"
-      type="text"
+      type="password"
+      [(ngModel)]="property.value"
     />
-  </div>
-  <div>
-    <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
-      Cross Check Dataset:
-    </label>
     <input
+      *ngIf="property.type === 'upload'"
       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-      id="password"
-      type="text"
+      type="file"
+      accept=".csv"
     />
-  </div>
-  <div>
-    <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
-      Regex:
-    </label>
-    <input
+
+    <select
+      *ngIf="property.type === 'drop-down'"
       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-      id="password"
-      type="text"
-    />
+      [(ngModel)]="property.value"
+    >
+      <option *ngFor="let opt of property.default" value="opt">
+        {{ opt }}
+      </option>
+    </select>
   </div>
 </aside>

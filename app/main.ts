@@ -1,13 +1,32 @@
-import {app, BrowserWindow, screen} from 'electron';
+import { app, BrowserWindow, screen, ipcMain } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
 
 let win: BrowserWindow = null;
 const args = process.argv.slice(1),
-  serve = args.some(val => val === '--serve');
+  serve = args.some((val) => val === '--serve');
+
+function dfs(nodes, node, graph, path = []) {
+  // add current node to path
+  path.push(node.id);
+
+  // if node has no outgoing edges, return the current path as a single-element list
+  if (!graph[node.id]) {
+    return [path];
+  }
+
+  // explore each outgoing edge
+  let paths = [];
+  for (let edge of graph[node.id]) {
+    let childNode = nodes.find((n) => n.id === edge.target);
+    let childPaths = dfs(childNode, graph, [...path]);
+    paths.push(...childPaths);
+  }
+
+  return paths;
+}
 
 function createWindow(): BrowserWindow {
-
   const size = screen.getPrimaryDisplay().workAreaSize;
 
   // Create the browser window.
@@ -18,9 +37,30 @@ function createWindow(): BrowserWindow {
     height: size.height,
     webPreferences: {
       nodeIntegration: true,
-      allowRunningInsecureContent: (serve),
-      contextIsolation: false,  // false if you want to run e2e test with Spectron
+      allowRunningInsecureContent: serve,
+      contextIsolation: false, // false if you want to run e2e test with Spectron
     },
+  });
+  ipcMain.on('my-message', (event, data) => {
+    let nodes = data.nodes;
+    let edges = data.edges;
+    let graph = {};
+    for (let edge of edges) {
+      if (!graph[edge.source]) {
+        graph[edge.source] = [];
+      }
+      graph[edge.source].push(edge);
+    }
+
+    // perform DFS on each node in the graph
+    let allPaths = [];
+    for (let node of nodes) {
+      let paths = dfs(nodes, node, graph);
+      allPaths.push(...paths);
+    }
+
+    console.log(allPaths.filter((path) => path[0] === '1'));
+    // Do something with the array
   });
 
   if (serve) {
@@ -34,7 +74,7 @@ function createWindow(): BrowserWindow {
     let pathIndex = './index.html';
 
     if (fs.existsSync(path.join(__dirname, '../dist/index.html'))) {
-       // Path when running electron in local folder
+      // Path when running electron in local folder
       pathIndex = '../dist/index.html';
     }
 
@@ -76,7 +116,6 @@ try {
       createWindow();
     }
   });
-
 } catch (e) {
   // Catch Error
   // throw e;

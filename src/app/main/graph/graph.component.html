@@ -2,7 +2,7 @@
   <div>
     <div style="border: black 1px solid">
       <ngx-graph
-        [view]="[screenWidth / 1.5, screenHeight - 120]"
+        [view]="[screenWidth / 1.5, screenHeight - 70]"
         [nodes]="nodes"
         [links]="edges"
         [panningEnabled]="true"
@@ -12,7 +12,7 @@
         [update$]="update$"
       >
         <ng-template #nodeTemplate let-node>
-          <svg:g class="node" (click)="onNodeClick(node)">
+          <svg:g class="node" (click)="nodeChange(node)">
             <svg:rect
               [attr.width]="node.dimension.width"
               [attr.height]="node.dimension.height"

@@ -6,8 +6,9 @@ import { MainComponent } from './main.component';
 import { RightComponent } from './right/right.component';
 import { LeftComponent } from './left/left.component';
 import { GraphComponent } from './graph/graph.component';
+import { FormsModule } from '@angular/forms';
 @NgModule({
   declarations: [MainComponent, RightComponent, LeftComponent, GraphComponent],
-  imports: [CommonModule, GraphModule, NgxGraphModule],
+  imports: [CommonModule, GraphModule, NgxGraphModule, FormsModule],
 })
 export class MainModule {}
