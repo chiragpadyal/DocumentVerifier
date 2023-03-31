@@ -43,7 +43,10 @@ function createWindow(): BrowserWindow {
           try {
             let result = await database.mysqlDB();
             allNodeResult[node.id] = result;
+            event.sender.send('my-message', `complete`, node.id);
           } catch (err) {
+            event.sender.send('my-message', `failed`, node.id);
+
             throw new Error(err);
           }
         }
@@ -54,7 +57,15 @@ function createWindow(): BrowserWindow {
           // console.log(prevNode);
           // console.log(allNodeResult[prevNode.id]);
           let fileSource = new File(node, allNodeResult[prevNode.id]);
-          fileSource.openFile();
+          let result = await fileSource.openFile();
+          allNodeResult[node.id] = result;
+          event.sender.send('my-message', `complete`, node.id);
+        }
+
+        if (node.label === 'aadhar') {
+          let prevNode = nodes.find((n) => n.id === element[index - 1]);
+          console.log(`aadhar value: ${allNodeResult[prevNode.id]}`);
+          event.sender.send('my-message', `complete`, node.id);
         }
       }
     });
