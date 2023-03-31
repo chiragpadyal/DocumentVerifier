@@ -10,17 +10,57 @@
         [enableZoom]="true"
         [animate]="false"
         [update$]="update$"
+        style="background-color: #af2d2d !important"
       >
         <ng-template #nodeTemplate let-node>
           <svg:g class="node" (click)="nodeChange(node)">
             <svg:rect
-              [attr.width]="node.dimension.width"
+              [attr.width]="node.dimension.width + 8"
               [attr.height]="node.dimension.height"
               [attr.fill]="node.data.color"
+              [attr.stroke]="'gold'"
+              [attr.stroke-width]="'2'"
             />
+            <svg:svg
+              *ngIf="checkIfComplete(node.id)"
+              [attr.x]="4"
+              [attr.y]="8"
+              [attr.width]="14"
+              [attr.height]="14"
+              viewBox="0 0 448 512"
+            >
+              <svg:path
+                [attr.d]="
+                  'M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z'
+                "
+                fill="#fff"
+                stroke="#fff"
+                stroke-width="2"
+              />
+            </svg:svg>
+
+            <svg:svg
+              *ngIf="checkIfFailed(node.id)"
+              [attr.x]="4"
+              [attr.y]="8"
+              [attr.width]="14"
+              [attr.height]="14"
+              viewBox="0 0 448 512"
+            >
+              <svg:path
+                [attr.d]="
+                  'M376.6 84.5c11.3-13.6 9.5-33.8-4.1-45.1s-33.8-9.5-45.1 4.1L192 206 56.6 43.5C45.3 29.9 25.1 28.1 11.5 39.4S-3.9 70.9 7.4 84.5L150.3 256 7.4 427.5c-11.3 13.6-9.5 33.8 4.1 45.1s33.8 9.5 45.1-4.1L192 306 327.4 468.5c11.3 13.6 31.5 15.4 45.1 4.1s15.4-31.5 4.1-45.1L233.7 256 376.6 84.5z'
+                "
+                fill="#fff"
+                stroke="#fff"
+                stroke-width="2"
+              />
+            </svg:svg>
             <svg:text
               alignment-baseline="central"
-              [attr.x]="10"
+              [attr.x]="
+                checkIfComplete(node.id) ? 23 : checkIfFailed(node.id) ? 23 : 14
+              "
               [attr.y]="node.dimension.height / 2"
             >
               {{ node.label }}

@@ -36,4 +36,12 @@ export class GraphComponent implements OnInit {
   nodeChange(nodeId: any) {
     this.currentNodeEmitter.emit(nodeId);
   }
+
+  checkIfComplete(id) {
+    return this.nodes.find((n) => n.id === id).isComplete;
+  }
+
+  checkIfFailed(id) {
+    return this.nodes.find((n) => n.id === id).isFailed;
+  }
 }

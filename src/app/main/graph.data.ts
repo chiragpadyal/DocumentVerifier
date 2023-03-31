@@ -10,6 +10,8 @@ class Graph {
   [key: string]: {
     properties: GraphProperties[];
     connectableTo: string[];
+    isComplete: boolean;
+    isFailed: boolean;
   };
 }
 
@@ -54,6 +56,8 @@ export const graphData: Graph = {
       },
     ],
     connectableTo: [],
+    isComplete: false,
+    isFailed: false,
   },
   database: {
     properties: [
@@ -122,6 +126,8 @@ export const graphData: Graph = {
       },
     ],
     connectableTo: ['input', 'file'],
+    isComplete: false,
+    isFailed: false,
   },
   api: {
     properties: [
@@ -148,6 +154,8 @@ export const graphData: Graph = {
       },
     ],
     connectableTo: ['input', 'file'],
+    isComplete: false,
+    isFailed: false,
   },
   file: {
     properties: [
@@ -174,14 +182,20 @@ export const graphData: Graph = {
       },
     ],
     connectableTo: ['aadhar', 'pan'],
+    isComplete: false,
+    isFailed: false,
   },
   aadhar: {
     properties: [],
     connectableTo: [],
+    isComplete: false,
+    isFailed: false,
   },
   pan: {
     properties: [],
     connectableTo: [],
+    isComplete: false,
+    isFailed: false,
   },
 };
 

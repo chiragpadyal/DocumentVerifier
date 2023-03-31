@@ -20,6 +20,8 @@ export class MainComponent implements OnInit {
       label: 'root',
       properties: [],
       connectedTo: [],
+      isComplete: false,
+      isFailed: false,
     },
   ];
   edges = [];
@@ -35,18 +37,45 @@ export class MainComponent implements OnInit {
   ngOnInit(): void {}
   nodeChange(nodeId: any) {
     this.selectedNode = nodeId;
-    console.log(this.selectedNode);
+    // console.log(this.selectedNode);
   }
   buttonClick(button: any) {
     if (button === 'play') {
-      console.log(this.nodes);
-      console.log(this.edges);
+      // console.log(this.nodes);
+      // console.log(this.edges);
       // send data to express
       if (this.electronService.isElectron) {
         // console.log(process.env);
         // console.log('Run in electron');
         // console.log('Electron ipcRenderer', this.electronService.ipcRenderer);
         // console.log('NodeJS childProcess', this.electronService.childProcess);
+        this.electronService.ipcRenderer.on('my-message', (event, arg, id) => {
+          console.log('recieved');
+          console.log(arg); // Log the received message
+
+          const nodeToUpdate = this.nodes.find((n) => n.id === id);
+
+          if (arg === 'complete') {
+            if (nodeToUpdate.isComplete === false) {
+              nodeToUpdate.isComplete = true;
+              nodeToUpdate.isFailed = false;
+            } else {
+              nodeToUpdate.isComplete = true;
+              nodeToUpdate.isFailed = false;
+            }
+          } else if (arg === 'failed') {
+            if (nodeToUpdate.isFailed === false) {
+              nodeToUpdate.isFailed = true;
+              nodeToUpdate.isComplete = false;
+            } else {
+              nodeToUpdate.isFailed = true;
+              nodeToUpdate.isComplete = false;
+            }
+          } else {
+            console.log('wrong reply from electronjs');
+          }
+        });
+
         this.electronService.ipcRenderer.send('my-message', {
           nodes: this.nodes,
           edges: this.edges,
@@ -69,6 +98,8 @@ export class MainComponent implements OnInit {
       label: name,
       properties: cloneDeep(properties),
       connectedTo: [...connectedTo],
+      isComplete: false,
+      isFailed: false,
     });
 
     if (parentId) {

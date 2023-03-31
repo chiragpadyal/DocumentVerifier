@@ -16,4 +16,16 @@ html{
   overflow-x: hidden !important; /* Hide horizontal scrollbar */
 }
 
+.ngx-charts-outer{
+  width: 100% !important;
+  // background-color: red;
+  background-image: url("assets/grid-png.png");
+  background-size: cover;
+
+}
+
+.ngx-charts{
+  width: 100%;
+
+}
 
