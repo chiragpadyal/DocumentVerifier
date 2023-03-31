@@ -1,11 +1,11 @@
 {
-  "name": "angular-electron",
+  "name": "document-verifier",
   "version": "11.2.0",
   "description": "Angular 14 with Electron 19 (Typescript + SASS + Hot Reload)",
-  "homepage": "https://github.com/maximegris/angular-electron",
+  "homepage": "https://github.com/chiragpadyal/DocumentVerifier",
   "author": {
-    "name": "Maxime GRIS",
-    "email": "maxime.gris@gmail.com"
+    "name": "Chirag Padyal",
+    "email": "chirag.padyal@gmail.com"
   },
   "keywords": [
     "angular",
@@ -21,7 +21,7 @@
     "mac",
     "linux"
   ],
-  "main": "app/main.js",
+  "main": "app/build/main.js",
   "private": true,
   "scripts": {
     "postinstall": "electron-builder install-app-deps",

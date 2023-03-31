@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "outDir": "./app/build",
     "sourceMap": true,
     "declaration": false,
     "moduleResolution": "node",

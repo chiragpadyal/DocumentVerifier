@@ -1,30 +1,13 @@
 import { app, BrowserWindow, screen, ipcMain } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
+import { GraphDFS } from './graph';
+import { Database } from './database';
+import { File } from './file';
 
 let win: BrowserWindow = null;
 const args = process.argv.slice(1),
   serve = args.some((val) => val === '--serve');
-
-function dfs(nodes, node, graph, path = []) {
-  // add current node to path
-  path.push(node.id);
-
-  // if node has no outgoing edges, return the current path as a single-element list
-  if (!graph[node.id]) {
-    return [path];
-  }
-
-  // explore each outgoing edge
-  let paths = [];
-  for (let edge of graph[node.id]) {
-    let childNode = nodes.find((n) => n.id === edge.target);
-    let childPaths = dfs(childNode, graph, [...path]);
-    paths.push(...childPaths);
-  }
-
-  return paths;
-}
 
 function createWindow(): BrowserWindow {
   const size = screen.getPrimaryDisplay().workAreaSize;
@@ -44,23 +27,39 @@ function createWindow(): BrowserWindow {
   ipcMain.on('my-message', (event, data) => {
     let nodes = data.nodes;
     let edges = data.edges;
-    let graph = {};
-    for (let edge of edges) {
-      if (!graph[edge.source]) {
-        graph[edge.source] = [];
+    let dfs = new GraphDFS(nodes, edges);
+    let pathsStartingFrom1 = dfs.findAllPathsStartingFromNode('1');
+    let allNodeResult = {};
+    pathsStartingFrom1.forEach(async (element) => {
+      for (let index = 1; index < element.length; index++) {
+        let node = nodes.find((n) => n.id === element[index]);
+        if (allNodeResult[node.id] in allNodeResult) {
+          // check if previous the node is traversed
+          continue;
+        }
+
+        if (node.label === 'database') {
+          let database = new Database(node);
+          try {
+            let result = await database.mysqlDB();
+            allNodeResult[node.id] = result;
+          } catch (err) {
+            throw new Error(err);
+          }
+        }
+
+        if (node.label === 'file') {
+          // console.log('file run started');
+          let prevNode = nodes.find((n) => n.id === element[index - 1]);
+          // console.log(prevNode);
+          // console.log(allNodeResult[prevNode.id]);
+          let fileSource = new File(node, allNodeResult[prevNode.id]);
+          fileSource.openFile();
+        }
       }
-      graph[edge.source].push(edge);
-    }
+    });
 
-    // perform DFS on each node in the graph
-    let allPaths = [];
-    for (let node of nodes) {
-      let paths = dfs(nodes, node, graph);
-      allPaths.push(...paths);
-    }
-
-    console.log(allPaths.filter((path) => path[0] === '1'));
-    // Do something with the array
+    // console.log(pathsStartingFrom1);
   });
 
   if (serve) {
@@ -73,9 +72,9 @@ function createWindow(): BrowserWindow {
     // Path when running electron executable
     let pathIndex = './index.html';
 
-    if (fs.existsSync(path.join(__dirname, '../dist/index.html'))) {
+    if (fs.existsSync(path.join(__dirname, '../../dist/index.html'))) {
       // Path when running electron in local folder
-      pathIndex = '../dist/index.html';
+      pathIndex = '../../dist/index.html';
     }
 
     const url = new URL(path.join('file:', __dirname, pathIndex));
