@@ -10,7 +10,8 @@ app/build
 src/**/*.js
 !src/karma.conf.js
 *.js.map
-
+*.jpg
+*.jpeg
 # dependencies
 node_modules
 
