@@ -1,9 +1,13 @@
-import { app, BrowserWindow, screen, ipcMain } from 'electron';
+import { app, BrowserWindow, Menu, screen, ipcMain } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
 import { GraphDFS } from './graph';
 import { Database } from './database';
 import { File } from './file';
+import { Aadhar } from './aadhar';
+import { Input } from './input';
+import { Ref } from './ref';
+import { Store } from './store';
 
 let win: BrowserWindow = null;
 const args = process.argv.slice(1),
@@ -11,6 +15,12 @@ const args = process.argv.slice(1),
 
 function createWindow(): BrowserWindow {
   const size = screen.getPrimaryDisplay().workAreaSize;
+
+  const store = new Store({
+    // We'll call our data file 'user-preferences'
+    configName: 'workflow-data',
+    defaults: {},
+  });
 
   // Create the browser window.
   win = new BrowserWindow({
@@ -24,51 +34,162 @@ function createWindow(): BrowserWindow {
       contextIsolation: false, // false if you want to run e2e test with Spectron
     },
   });
+  app.whenReady().then(() => {
+    // Hide the default menu
+    Menu.setApplicationMenu(null);
+  });
+
+  ipcMain.on('store-data', (event, data) => {
+    console.log('value is:');
+    console.log(data.value);
+    store.set(data.key, data.value);
+  });
+
+  ipcMain.on('get-all', (event, data) => {
+    const dataFromDB = store.getAll();
+    event.sender.send('get-all', dataFromDB);
+  });
+
+  ipcMain.on('get-store-data', (event, data) => {
+    const dataFromDB = store.get(data);
+    event.sender.send('get-store-data', dataFromDB);
+  });
+
   ipcMain.on('my-message', (event, data) => {
     let nodes = data.nodes;
     let edges = data.edges;
+    // console.log(nodes, edges);
     let dfs = new GraphDFS(nodes, edges);
+    // console.log(dfs);
+
     let pathsStartingFrom1 = dfs.findAllPathsStartingFromNode('1');
+    // console.log(pathsStartingFrom1);
+
     let allNodeResult = {};
-    pathsStartingFrom1.forEach(async (element) => {
-      for (let index = 1; index < element.length; index++) {
-        let node = nodes.find((n) => n.id === element[index]);
-        if (allNodeResult[node.id] in allNodeResult) {
-          // check if previous the node is traversed
-          continue;
-        }
+    Promise.all(
+      pathsStartingFrom1.map(async (element) => {
+        for (let index = 1; index < element.length; index++) {
+          let node = nodes.find((n) => n.id === element[index]);
+          if (allNodeResult[node.id] in allNodeResult) {
+            // check if previous the node is traversed
+            continue;
+          }
 
-        if (node.label === 'database') {
-          let database = new Database(node);
-          try {
-            let result = await database.mysqlDB();
-            allNodeResult[node.id] = result;
+          if (node.label === 'database') {
+            let database = new Database(node);
+            try {
+              let result = await database.mysqlDB();
+              allNodeResult[node.id] = result;
+              event.sender.send('my-message', `complete`, node.id);
+            } catch (err) {
+              event.sender.send('my-message', `failed`, node.id);
+
+              throw new Error(err);
+            }
+          }
+
+          if (node.label === 'file') {
+            // console.log('file run started');
+            let prevNode = nodes.find((n) => n.id === element[index - 1]);
+            // console.log(prevNode);
+            // console.log(allNodeResult[prevNode.id]);
+            try {
+              let fileSource = new File(node, allNodeResult[prevNode.id]);
+              let result = await fileSource.openFile();
+              allNodeResult[node.id] = result;
+              event.sender.send('my-message', `complete`, node.id);
+            } catch (e) {
+              event.sender.send('my-message', `failed`, node.id);
+            }
+          }
+
+          if (node.label === 'aadhar') {
+            let prevNode = nodes.find((n) => n.id === element[index - 1]);
+
+            let aadhar = new Aadhar(node, allNodeResult[prevNode.id]);
+            try {
+              let result = await aadhar.aadharScan();
+              allNodeResult[node.id] = result;
+              // console.log(result);
+              event.sender.send('my-message', `complete`, node.id);
+            } catch (e) {
+              event.sender.send('my-message', `failed`, node.id);
+            }
+          }
+
+          if (node.label === 'input') {
+            let prevNode = nodes.find((n) => n.id === element[index - 1]);
+            let input = new Input(node, allNodeResult[prevNode.id]);
+            try {
+              let result = input.getInput();
+              allNodeResult[node.id] = result;
+              event.sender.send('my-message', `complete`, node.id);
+            } catch (e) {
+              event.sender.send('my-message', `failed`, node.id);
+            }
+          }
+
+          if (node.label === 'ref') {
+            let prevNode = nodes.find((n) => n.id === element[index - 1]);
+            // console.log(prevNode);
+            let finalArr = [];
+            allNodeResult[prevNode.id].forEach((element) => {
+              let input = new Ref(node, element);
+              try {
+                let result = input.getRef();
+                console.log(result);
+                let final = {};
+                if (result.labelName === 'First Name Reference:') {
+                  final['firstName'] = input.checkIsInclude(
+                    result.paragraph,
+                    allNodeResult[result.toNode]
+                  );
+                } else if (result.labelName === 'Middle Name Reference:') {
+                  final['middleName'] = input.checkIsInclude(
+                    result.paragraph,
+                    allNodeResult[result.toNode]
+                  );
+                } else if (result.labelName === 'Last Name Reference:') {
+                  final['lastName'] = input.checkIsInclude(
+                    result.paragraph,
+                    allNodeResult[result.toNode]
+                  );
+                } else if (result.labelName === 'DOB Reference:') {
+                  console.log(result.labelName);
+                  console.log(allNodeResult[result.toNode]);
+                  const date = new Date(allNodeResult[result.toNode]);
+                  const dateStr = `${date.getDate()}/${
+                    date.getMonth() + 1
+                  }/${date.getFullYear()}`;
+                  console.log(`DOB: ${result} and ${dateStr}`);
+                  console.log(`DOB: ${result.dob} and ${dateStr}`);
+                  final['dob'] = input.checkRef(result.dob, dateStr);
+                } else if (result.labelName === 'Aadhar Reference:') {
+                  final['aadhar'] = input.checkIsInclude(
+                    result.paragraph,
+                    allNodeResult[result.toNode]
+                  );
+                } else {
+                  console.log('out of order');
+                }
+                console.log(final);
+                finalArr.push(final);
+              } catch (e) {
+                console.log(e);
+              }
+            });
+            allNodeResult[node.id] = finalArr;
             event.sender.send('my-message', `complete`, node.id);
-          } catch (err) {
-            event.sender.send('my-message', `failed`, node.id);
-
-            throw new Error(err);
           }
         }
-
-        if (node.label === 'file') {
-          // console.log('file run started');
-          let prevNode = nodes.find((n) => n.id === element[index - 1]);
-          // console.log(prevNode);
-          // console.log(allNodeResult[prevNode.id]);
-          let fileSource = new File(node, allNodeResult[prevNode.id]);
-          let result = await fileSource.openFile();
-          allNodeResult[node.id] = result;
-          event.sender.send('my-message', `complete`, node.id);
-        }
-
-        if (node.label === 'aadhar') {
-          let prevNode = nodes.find((n) => n.id === element[index - 1]);
-          console.log(`aadhar value: ${allNodeResult[prevNode.id]}`);
-          event.sender.send('my-message', `complete`, node.id);
-        }
-      }
-    });
+      })
+    )
+      .then((results) => {
+        // handle results
+      })
+      .catch((error) => {
+        // handle errors
+      });
 
     // console.log(pathsStartingFrom1);
   });
@@ -83,9 +204,9 @@ function createWindow(): BrowserWindow {
     // Path when running electron executable
     let pathIndex = './index.html';
 
-    if (fs.existsSync(path.join(__dirname, '../../dist/index.html'))) {
+    if (fs.existsSync(path.join(__dirname, '../dist/index.html'))) {
       // Path when running electron in local folder
-      pathIndex = '../../dist/index.html';
+      pathIndex = '../dist/index.html';
     }
 
     const url = new URL(path.join('file:', __dirname, pathIndex));

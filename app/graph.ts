@@ -18,17 +18,17 @@ export class GraphDFS {
 
   dfs(node, path = []) {
     // add current node to path
-    path.push(node.id);
-
+    path.push(node.id.toString());
+    // console.log(path.push(node.id.toString()));
     // if node has no outgoing edges, return the current path as a single-element list
-    if (!this.graph[node.id]) {
+    if (!this.graph[node.id.toString()]) {
       return [path];
     }
 
     // explore each outgoing edge
     let paths = [];
-    for (let edge of this.graph[node.id]) {
-      let childNode = this.nodes.find((n) => n.id === edge.target);
+    for (let edge of this.graph[node.id.toString()]) {
+      let childNode = this.nodes.find((n) => n.id === edge.target.toString());
       let childPaths = this.dfs(childNode, [...path]);
       paths.push(...childPaths);
     }
@@ -39,6 +39,8 @@ export class GraphDFS {
   findAllPaths() {
     let allPaths = [];
     for (let node of this.nodes) {
+      // console.log(node.id.toString());
+
       let paths = this.dfs(node);
       allPaths.push(...paths);
     }
