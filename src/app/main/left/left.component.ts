@@ -1,4 +1,5 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-left',
@@ -16,10 +17,13 @@ export class LeftComponent implements OnInit {
     { value: 'Pan Card', key: 'pan' },
     { value: 'File', key: 'file' },
   ];
-  constructor() {}
+  constructor(private router: Router) {}
 
   ngOnInit(): void {}
   buttonClick(button: any) {
     this.buttonClickEvent.emit(button);
+  }
+  backNav() {
+    this.router.navigate(['/home']);
   }
 }

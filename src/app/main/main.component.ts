@@ -3,6 +3,8 @@ import { graphData } from './graph.data';
 import { GraphComponent } from './graph/graph.component';
 import { cloneDeep } from 'lodash';
 import { ElectronService } from '../core/services';
+import { ActivatedRoute } from '@angular/router';
+import { workerData } from 'worker_threads';
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
@@ -12,8 +14,8 @@ export class MainComponent implements OnInit {
   @ViewChild(GraphComponent) graphComp: GraphComponent;
   selectedNode: any = { id: 1, label: 'root' };
   graph: any = null;
-  spacer = 7;
-
+  refNodeData = [];
+  projectName = 'temp';
   nodes = [
     {
       id: '1',
@@ -25,7 +27,10 @@ export class MainComponent implements OnInit {
     },
   ];
   edges = [];
-  constructor(private electronService: ElectronService) {
+  constructor(
+    private electronService: ElectronService,
+    private route: ActivatedRoute
+  ) {
     this.graph = graphData;
   }
   selectedNodeProperties = () => {
@@ -34,12 +39,50 @@ export class MainComponent implements OnInit {
     return val;
   };
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    console.log('init workerData');
+
+    const workflowData = JSON.parse(
+      this.route.snapshot.queryParamMap.get('data')
+    );
+    console.log('before workerData');
+
+    const workflowName = this.route.snapshot.queryParamMap.get('fileName');
+
+    console.log(workflowName);
+    console.log('after workerData');
+
+    this.projectName = workflowName;
+    console.log(workerData);
+    console.log(workflowData.nodes);
+    if ('nodes' in workflowData && 'edges' in workflowData) {
+      this.nodes = workflowData.nodes;
+      this.edges = workflowData.edges;
+      this.graphComp.updateGraph();
+    }
+  }
   nodeChange(nodeId: any) {
     this.selectedNode = nodeId;
     // console.log(this.selectedNode);
   }
   buttonClick(button: any) {
+    if (button === 'save') {
+      const now = new Date(); // create a new Date object with the current date and time
+      const dateString = now.toLocaleString(); // format the Date object as a string in the local timezone
+      if (this.electronService.isElectron) {
+        this.electronService.ipcRenderer.send('store-data', {
+          key: this.projectName,
+          value: {
+            nodes: this.nodes,
+            edges: this.edges,
+            modifyAt: dateString,
+          },
+        });
+      }
+
+      return false;
+    }
+
     if (button === 'play') {
       // console.log(this.nodes);
       // console.log(this.edges);
@@ -89,7 +132,7 @@ export class MainComponent implements OnInit {
     // this.graphComp.addNode(button, this.selectedNode.id);
   }
   addNode(name: any, parentId: any) {
-    const newID = this.spacer + 1;
+    const newID = this.nodes.length + 1;
     const properties = this.graph?.[name].properties ?? [];
     const connectedTo = this.graph?.[name].connectedTo ?? [];
 
@@ -109,7 +152,52 @@ export class MainComponent implements OnInit {
         target: `${newID}`,
       });
     }
-    this.spacer += 1;
+    // this.spacer += 1;
+
+    this.graphComp.updateGraph();
+  }
+  getRefData(nodeType) {
+    let list = [];
+    console.log(nodeType);
+
+    nodeType.forEach((element) => {
+      console.log(element);
+      const node = this.nodes.filter((n) => n.label === element);
+      console.log(node);
+
+      if (!node) {
+        return false;
+      }
+      list = list.concat(node);
+    });
+    console.log(list);
+    this.refNodeData = list;
+  }
+
+  getRefNodeChange(node) {
+    const name = 'ref';
+    const newID = this.nodes.length + 1;
+    const properties = cloneDeep(this.graph?.[name].properties) ?? [];
+
+    const connectedTo = this.graph?.[name].connectedTo ?? [];
+    const source = node[0];
+    const dest = node[1];
+    const label = node[2];
+    console.log(source);
+    console.log(dest);
+    properties[0].value = source.id;
+    properties[1].value = dest;
+    properties[2].value = label;
+    this.nodes.push({
+      id: `${newID}`,
+      label: name,
+      properties,
+      connectedTo: [...connectedTo],
+      isComplete: false,
+      isFailed: false,
+    });
+    this.edges.push({ id: 'a', source: source.id, target: newID });
+    // this.spacer += 1;
 
     this.graphComp.updateGraph();
   }

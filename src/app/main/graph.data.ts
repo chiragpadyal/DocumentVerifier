@@ -4,6 +4,7 @@ class GraphProperties {
   default: string | string[];
   isOptional: boolean;
   value: string;
+  isInMutable: boolean;
 }
 
 class Graph {
@@ -25,6 +26,7 @@ export const graphData: Graph = {
         default: '',
         isOptional: false,
         value: '',
+        isInMutable: false,
       },
       {
         name: 'Attribute Type',
@@ -32,6 +34,7 @@ export const graphData: Graph = {
         default: ['string', 'number'],
         isOptional: false,
         value: '',
+        isInMutable: false,
       },
       {
         name: 'Cross Check Key ',
@@ -39,6 +42,7 @@ export const graphData: Graph = {
         default: '',
         isOptional: false,
         value: '',
+        isInMutable: false,
       },
       {
         name: 'Cross Check Dataset',
@@ -46,6 +50,7 @@ export const graphData: Graph = {
         default: '',
         isOptional: false,
         value: '',
+        isInMutable: false,
       },
       {
         name: 'Regex',
@@ -53,6 +58,7 @@ export const graphData: Graph = {
         default: '',
         isOptional: false,
         value: '',
+        isInMutable: false,
       },
     ],
     connectableTo: [],
@@ -67,6 +73,7 @@ export const graphData: Graph = {
         default: '',
         isOptional: false,
         value: '',
+        isInMutable: false,
       },
       {
         name: 'Database Name',
@@ -74,6 +81,7 @@ export const graphData: Graph = {
         default: '',
         isOptional: false,
         value: '',
+        isInMutable: false,
       },
       {
         name: 'Port',
@@ -81,6 +89,7 @@ export const graphData: Graph = {
         default: '',
         isOptional: false,
         value: '',
+        isInMutable: false,
       },
       {
         name: 'Username',
@@ -88,6 +97,7 @@ export const graphData: Graph = {
         default: '',
         isOptional: false,
         value: '',
+        isInMutable: false,
       },
       {
         name: 'Password',
@@ -95,6 +105,7 @@ export const graphData: Graph = {
         default: '',
         isOptional: false,
         value: '',
+        isInMutable: false,
       },
       {
         name: 'Table Name',
@@ -102,6 +113,7 @@ export const graphData: Graph = {
         default: '',
         isOptional: false,
         value: '',
+        isInMutable: false,
       },
       {
         name: 'Fields',
@@ -109,6 +121,7 @@ export const graphData: Graph = {
         default: '*',
         isOptional: false,
         value: '',
+        isInMutable: false,
       },
       {
         name: 'FilterBy',
@@ -116,6 +129,7 @@ export const graphData: Graph = {
         default: '',
         isOptional: true,
         value: '',
+        isInMutable: false,
       },
       {
         name: 'SQL Query',
@@ -123,6 +137,7 @@ export const graphData: Graph = {
         default: '',
         isOptional: true,
         value: '',
+        isInMutable: false,
       },
     ],
     connectableTo: ['input', 'file'],
@@ -137,6 +152,7 @@ export const graphData: Graph = {
         default: '',
         isOptional: false,
         value: '',
+        isInMutable: false,
       },
       {
         name: 'Direction',
@@ -144,6 +160,7 @@ export const graphData: Graph = {
         default: ['post', 'fetch'],
         isOptional: false,
         value: '',
+        isInMutable: false,
       },
       {
         name: 'Url (if Fetch)',
@@ -151,6 +168,7 @@ export const graphData: Graph = {
         default: '',
         isOptional: true,
         value: '',
+        isInMutable: false,
       },
     ],
     connectableTo: ['input', 'file'],
@@ -165,6 +183,7 @@ export const graphData: Graph = {
         default: '',
         isOptional: false,
         value: '',
+        isInMutable: false,
       },
       {
         name: 'Attribute Type',
@@ -172,6 +191,7 @@ export const graphData: Graph = {
         default: ['url', 'blob'],
         isOptional: false,
         value: '',
+        isInMutable: false,
       },
       {
         name: 'Cross Check Key ',
@@ -179,6 +199,7 @@ export const graphData: Graph = {
         default: '',
         isOptional: false,
         value: '',
+        isInMutable: false,
       },
     ],
     connectableTo: ['aadhar', 'pan'],
@@ -186,13 +207,85 @@ export const graphData: Graph = {
     isFailed: false,
   },
   aadhar: {
-    properties: [],
+    properties: [
+      {
+        name: 'First Name Reference:',
+        type: 'ref',
+        default: ['input'],
+        isOptional: false,
+        value: '',
+        isInMutable: false,
+      },
+      {
+        name: 'Middle Name Reference:',
+        type: 'ref',
+        default: ['input'],
+        isOptional: false,
+        value: '',
+        isInMutable: false,
+      },
+      {
+        name: 'Last Name Reference:',
+        type: 'ref',
+        default: ['input'],
+        isOptional: false,
+        value: '',
+        isInMutable: false,
+      },
+      {
+        name: 'DOB Reference:',
+        type: 'ref',
+        default: ['input'],
+        isOptional: false,
+        value: '',
+        isInMutable: false,
+      },
+      {
+        name: 'Aadhar Reference:',
+        type: 'ref',
+        default: ['input'],
+        isOptional: false,
+        value: '',
+        isInMutable: false,
+      },
+    ],
     connectableTo: [],
     isComplete: false,
     isFailed: false,
   },
   pan: {
     properties: [],
+    connectableTo: [],
+    isComplete: false,
+    isFailed: false,
+  },
+  ref: {
+    properties: [
+      {
+        name: 'Source',
+        type: 'string',
+        default: '',
+        isOptional: false,
+        value: '',
+        isInMutable: true,
+      },
+      {
+        name: 'Destination',
+        type: 'string',
+        default: '',
+        isOptional: false,
+        value: '',
+        isInMutable: true,
+      },
+      {
+        name: 'For',
+        type: 'string',
+        default: '',
+        isOptional: false,
+        value: '',
+        isInMutable: true,
+      },
+    ],
     connectableTo: [],
     isComplete: false,
     isFailed: false,

@@ -1,1 +1,173 @@
-<h1>Home</h1>
+<div class="container max-w-7xl mx-auto mt-8 p-4">
+  <div class="mb-4">
+    <h1 class="font-serif text-3xl font-bold underline decoration-gray-400">
+      Workflows
+    </h1>
+    <div class="flex justify-end">
+      <div class="relative w-64">
+        <label for="UserEmail" class="sr-only"> Email </label>
+
+        <input
+          type="email"
+          id="UserEmail"
+          placeholder="workflow_name..."
+          class="w-full p-2 rounded-md border border-gray-200 py-2.5 shadow-sm sm:text-sm"
+          [(ngModel)]="inputFieldVal"
+        />
+
+        <span class="absolute inset-y-0 right-0 grid w-10 place-content-center">
+          <button
+            type="button"
+            class="rounded-full bg-rose-600 p-0.5 text-white hover:bg-rose-700 dark:bg-rose-500 dark:text-gray-800 dark:hover:bg-rose-600"
+            (click)="navigateToWorkflow('', inputFieldVal)"
+          >
+            <span class="sr-only">Submit</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              class="h-4 w-4"
+            >
+              <path
+                d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z"
+              />
+            </svg>
+          </button>
+        </span>
+        <button
+          (click)="navigateToWorkflow(setCurrentData[0], setCurrentData[1])"
+          #hiddenBtn
+          style="display: none"
+        >
+          Hidden WorkAround
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="flex flex-col">
+    <div class="overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+      <div
+        class="inline-block min-w-full overflow-hidden align-middle border-b border-gray-200 shadow sm:rounded-lg"
+      >
+        <table class="min-w-full">
+          <thead>
+            <tr>
+              <th
+                class="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50"
+              >
+                ID
+              </th>
+              <th
+                class="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50"
+              >
+                Title
+              </th>
+              <th
+                class="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50"
+              >
+                Last Modification
+              </th>
+              <th
+                class="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50"
+              >
+                Schedule
+              </th>
+              <th
+                class="px-6 py-3 text-sm text-left text-gray-500 border-b border-gray-200 bg-gray-50"
+                colspan="3"
+              >
+                Action
+              </th>
+            </tr>
+          </thead>
+
+          <tbody class="bg-white">
+            <tr *ngFor="let item of workflowData | keyvalue; let i = index">
+              <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                <div class="flex items-center">{{ i + 1 }}</div>
+              </td>
+
+              <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                <div class="text-sm leading-5 text-gray-900">
+                  {{ item.key }}
+                </div>
+              </td>
+
+              <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                <p>{{ formatRelativeTime(item.value["modifyAt"]) }}</p>
+              </td>
+
+              <td
+                class="px-6 py-4 text-sm leading-5 text-gray-500 whitespace-no-wrap border-b border-gray-200"
+              >
+                <span>none</span>
+              </td>
+
+              <td
+                class="text-sm font-medium leading-5 text-center whitespace-no-wrap border-b border-gray-200"
+              >
+                <button
+                  type="button"
+                  (click)="setCurrentDataFunc([item.value, item.key])"
+                  class="text-indigo-600 hover:text-indigo-900"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-6 h-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                    />
+                  </svg>
+                </button>
+              </td>
+
+              <td
+                class="text-sm font-medium leading-5 text-center whitespace-no-wrap border-b border-gray-200"
+              >
+                <button>
+                  <svg
+                    class="w-6 h-6 text-red-600 hover:text-red-800"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 384 512"
+                  >
+                    <path
+                      d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"
+                    />
+                  </svg>
+                </button>
+              </td>
+
+              <td
+                class="text-sm font-medium leading-5 whitespace-no-wrap border-b border-gray-200"
+              >
+                <button>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-6 h-6 text-red-600 hover:text-red-800"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    />
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

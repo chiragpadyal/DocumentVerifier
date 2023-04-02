@@ -27,7 +27,12 @@
   >
     <!-- fixed-width -->
     <div class="flex sm:flex-col px-2">
-      <app-right [properties]="selectedNodeProperties()"></app-right>
+      <app-right
+        [properties]="selectedNodeProperties()"
+        [refNodeData]="refNodeData"
+        (getNodeData)="getRefData($event)"
+        (refNodeChangeEvent)="getRefNodeChange($event)"
+      ></app-right>
     </div>
   </div>
 </div>
