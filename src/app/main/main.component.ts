@@ -24,6 +24,7 @@ export class MainComponent implements OnInit {
       connectedTo: [],
       isComplete: false,
       isFailed: false,
+      logs: '',
     },
   ];
   edges = [];
@@ -40,25 +41,27 @@ export class MainComponent implements OnInit {
   };
 
   ngOnInit(): void {
-    console.log('init workerData');
+    if (this.electronService.isElectron) {
+      console.log('init workerData');
 
-    const workflowData = JSON.parse(
-      this.route.snapshot.queryParamMap.get('data')
-    );
-    console.log('before workerData');
+      const workflowData = JSON.parse(
+        this.route.snapshot.queryParamMap.get('data')
+      );
+      console.log('before workerData');
 
-    const workflowName = this.route.snapshot.queryParamMap.get('fileName');
+      const workflowName = this.route.snapshot.queryParamMap.get('fileName');
 
-    console.log(workflowName);
-    console.log('after workerData');
+      console.log(workflowName);
+      console.log('after workerData');
 
-    this.projectName = workflowName;
-    console.log(workerData);
-    console.log(workflowData.nodes);
-    if ('nodes' in workflowData && 'edges' in workflowData) {
-      this.nodes = workflowData.nodes;
-      this.edges = workflowData.edges;
-      this.graphComp.updateGraph();
+      this.projectName = workflowName;
+      console.log(workerData);
+      console.log(workflowData.nodes);
+      if ('nodes' in workflowData && 'edges' in workflowData) {
+        this.nodes = workflowData.nodes;
+        this.edges = workflowData.edges;
+        this.graphComp.updateGraph();
+      }
     }
   }
   nodeChange(nodeId: any) {
@@ -92,32 +95,36 @@ export class MainComponent implements OnInit {
         // console.log('Run in electron');
         // console.log('Electron ipcRenderer', this.electronService.ipcRenderer);
         // console.log('NodeJS childProcess', this.electronService.childProcess);
-        this.electronService.ipcRenderer.on('my-message', (event, arg, id) => {
-          console.log('recieved');
-          console.log(arg); // Log the received message
+        this.electronService.ipcRenderer.on(
+          'my-message',
+          (event, arg, id, logs) => {
+            console.log('recieved');
+            console.log(arg); // Log the received message
 
-          const nodeToUpdate = this.nodes.find((n) => n.id === id);
+            const nodeToUpdate = this.nodes.find((n) => n.id === id);
 
-          if (arg === 'complete') {
-            if (nodeToUpdate.isComplete === false) {
-              nodeToUpdate.isComplete = true;
-              nodeToUpdate.isFailed = false;
+            if (arg === 'complete') {
+              if (nodeToUpdate.isComplete === false) {
+                nodeToUpdate.isComplete = true;
+                nodeToUpdate.isFailed = false;
+              } else {
+                nodeToUpdate.isComplete = true;
+                nodeToUpdate.isFailed = false;
+              }
+            } else if (arg === 'failed') {
+              if (nodeToUpdate.isFailed === false) {
+                nodeToUpdate.isFailed = true;
+                nodeToUpdate.isComplete = false;
+              } else {
+                nodeToUpdate.isFailed = true;
+                nodeToUpdate.isComplete = false;
+              }
             } else {
-              nodeToUpdate.isComplete = true;
-              nodeToUpdate.isFailed = false;
+              console.log('wrong reply from electronjs');
             }
-          } else if (arg === 'failed') {
-            if (nodeToUpdate.isFailed === false) {
-              nodeToUpdate.isFailed = true;
-              nodeToUpdate.isComplete = false;
-            } else {
-              nodeToUpdate.isFailed = true;
-              nodeToUpdate.isComplete = false;
-            }
-          } else {
-            console.log('wrong reply from electronjs');
+            nodeToUpdate.logs = logs;
           }
-        });
+        );
 
         this.electronService.ipcRenderer.send('my-message', {
           nodes: this.nodes,
@@ -143,6 +150,7 @@ export class MainComponent implements OnInit {
       connectedTo: [...connectedTo],
       isComplete: false,
       isFailed: false,
+      logs: '',
     });
 
     if (parentId) {
@@ -195,6 +203,7 @@ export class MainComponent implements OnInit {
       connectedTo: [...connectedTo],
       isComplete: false,
       isFailed: false,
+      logs: '',
     });
     this.edges.push({ id: 'a', source: source.id, target: newID });
     // this.spacer += 1;

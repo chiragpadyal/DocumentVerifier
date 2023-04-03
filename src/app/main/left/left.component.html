@@ -1,38 +1,47 @@
-<aside
-  class="flex w-full flex-col space-y-2 bg-white"
-  style="height: 90.5vh"
-  x-show="asideOpen"
->
-  <button
-    class="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-    (click)="buttonClick('play')"
+<div class="flex flex-col h-screen">
+  <aside
+    class="flex flex-col h-3/4 w-full space-y-2 bg-white"
+    style="height: 90.5vh"
+    x-show="asideOpen"
   >
-    <span class="text-2xl"><i class="bx bx-home"></i></span>
-    <span> Play </span>
-  </button>
-  <button
-    class="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-    (click)="buttonClick('save')"
-  >
-    <span class="text-2xl"><i class="bx bx-home"></i></span>
-    <span> Save </span>
-  </button>
-  <button
-    class="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-    (click)="backNav()"
-  >
-    <span class="text-2xl"><i class="bx bx-home"></i></span>
-    <span> Back </span>
-  </button>
-  <label class="block text-gray-700 text-sm font-bold mb-2"> Elements: </label>
-  <ng-container *ngFor="let button of buttonArray">
     <button
-      *ngIf="connectableTo?.includes(button.key)"
-      (click)="buttonClick(button.key)"
-      class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      class="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      (click)="buttonClick('play')"
     >
       <span class="text-2xl"><i class="bx bx-home"></i></span>
-      <span>{{ button.value }}</span>
+      <span> Play </span>
     </button>
-  </ng-container>
-</aside>
+    <button
+      class="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      (click)="buttonClick('save')"
+    >
+      <span class="text-2xl"><i class="bx bx-home"></i></span>
+      <span> Save </span>
+    </button>
+    <button
+      class="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      (click)="backNav()"
+    >
+      <span class="text-2xl"><i class="bx bx-home"></i></span>
+      <span> Back </span>
+    </button>
+    <label class="block text-gray-700 text-sm font-bold mb-2">
+      Elements:
+    </label>
+    <ng-container *ngFor="let button of buttonArray">
+      <button
+        *ngIf="connectableTo?.includes(button.key)"
+        (click)="buttonClick(button.key)"
+        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      >
+        <span class="text-2xl"><i class="bx bx-home"></i></span>
+        <span>{{ button.value }}</span>
+      </button>
+    </ng-container>
+  </aside>
+  <div class="flex flex-col w-full h-1/4 bg-gray-200 p-2">
+    <div class="bg-black text-white font-mono p-4 overflow-scroll">
+      <p>{{ getLogs() }}</p>
+    </div>
+  </div>
+</div>

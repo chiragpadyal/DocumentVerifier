@@ -8,6 +8,7 @@
         [connectableTo]="
           graph[selectedNode.label]?.connectableTo || ['database', 'api']
         "
+        [logs]="selectedNodeProperties()?.logs || ''"
         (buttonClickEvent)="buttonClick($event)"
       ></app-left>
     </div>

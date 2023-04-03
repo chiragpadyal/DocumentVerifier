@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 })
 export class LeftComponent implements OnInit {
   @Input() connectableTo: any = ['database'];
+  @Input() logs: any = '';
   @Output() buttonClickEvent = new EventEmitter<string>();
   buttonArray = [
     { value: 'Database', key: 'database' },
@@ -25,5 +26,9 @@ export class LeftComponent implements OnInit {
   }
   backNav() {
     this.router.navigate(['/home']);
+  }
+
+  getLogs() {
+    return JSON.stringify(this.logs);
   }
 }

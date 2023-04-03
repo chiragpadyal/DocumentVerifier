@@ -13,6 +13,7 @@ class Graph {
     connectableTo: string[];
     isComplete: boolean;
     isFailed: boolean;
+    logs: string;
   };
 }
 
@@ -64,6 +65,7 @@ export const graphData: Graph = {
     connectableTo: [],
     isComplete: false,
     isFailed: false,
+    logs: '',
   },
   database: {
     properties: [
@@ -143,6 +145,7 @@ export const graphData: Graph = {
     connectableTo: ['input', 'file'],
     isComplete: false,
     isFailed: false,
+    logs: '',
   },
   api: {
     properties: [
@@ -174,6 +177,7 @@ export const graphData: Graph = {
     connectableTo: ['input', 'file'],
     isComplete: false,
     isFailed: false,
+    logs: '',
   },
   file: {
     properties: [
@@ -205,6 +209,7 @@ export const graphData: Graph = {
     connectableTo: ['aadhar', 'pan'],
     isComplete: false,
     isFailed: false,
+    logs: '',
   },
   aadhar: {
     properties: [
@@ -252,12 +257,14 @@ export const graphData: Graph = {
     connectableTo: [],
     isComplete: false,
     isFailed: false,
+    logs: '',
   },
   pan: {
     properties: [],
     connectableTo: [],
     isComplete: false,
     isFailed: false,
+    logs: '',
   },
   ref: {
     properties: [
@@ -289,6 +296,7 @@ export const graphData: Graph = {
     connectableTo: [],
     isComplete: false,
     isFailed: false,
+    logs: '',
   },
 };
 

@@ -80,9 +80,9 @@ function createWindow(): BrowserWindow {
             try {
               let result = await database.mysqlDB();
               allNodeResult[node.id] = result;
-              event.sender.send('my-message', `complete`, node.id);
+              event.sender.send('my-message', `complete`, node.id, result);
             } catch (err) {
-              event.sender.send('my-message', `failed`, node.id);
+              event.sender.send('my-message', `failed`, node.id, '');
 
               throw new Error(err);
             }
@@ -97,9 +97,9 @@ function createWindow(): BrowserWindow {
               let fileSource = new File(node, allNodeResult[prevNode.id]);
               let result = await fileSource.openFile();
               allNodeResult[node.id] = result;
-              event.sender.send('my-message', `complete`, node.id);
+              event.sender.send('my-message', `complete`, node.id, result);
             } catch (e) {
-              event.sender.send('my-message', `failed`, node.id);
+              event.sender.send('my-message', `failed`, node.id, '');
             }
           }
 
@@ -111,9 +111,9 @@ function createWindow(): BrowserWindow {
               let result = await aadhar.aadharScan();
               allNodeResult[node.id] = result;
               // console.log(result);
-              event.sender.send('my-message', `complete`, node.id);
+              event.sender.send('my-message', `complete`, node.id, result);
             } catch (e) {
-              event.sender.send('my-message', `failed`, node.id);
+              event.sender.send('my-message', `failed`, node.id, '');
             }
           }
 
@@ -123,9 +123,9 @@ function createWindow(): BrowserWindow {
             try {
               let result = input.getInput();
               allNodeResult[node.id] = result;
-              event.sender.send('my-message', `complete`, node.id);
+              event.sender.send('my-message', `complete`, node.id, result);
             } catch (e) {
-              event.sender.send('my-message', `failed`, node.id);
+              event.sender.send('my-message', `failed`, node.id, '');
             }
           }
 
@@ -179,7 +179,7 @@ function createWindow(): BrowserWindow {
               }
             });
             allNodeResult[node.id] = finalArr;
-            event.sender.send('my-message', `complete`, node.id);
+            event.sender.send('my-message', `complete`, node.id, finalArr);
           }
         }
       })
